@@ -1,4 +1,5 @@
 use std::net::{TcpListener, TcpStream};
+use std::fs::File;
 use std::io::prelude::*;
 use std::thread;
 
@@ -13,6 +14,12 @@ fn main() {
 }
 
 fn handle_connection(mut stream: TcpStream) {
-    let message = String::from("Message\n");
-    stream.write(message.as_bytes()).unwrap();
+    let mut file = File::open("Server.rs").unwrap();
+    let mut buffer = [0u8; 4096];
+
+    loop {
+        let nbytes = file.read(&mut buffer).unwrap();
+        stream.write(&mut buffer).unwrap();
+        if nbytes < buffer.len() { break; }
+    }
 }

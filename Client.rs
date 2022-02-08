@@ -1,13 +1,16 @@
 use std::net::TcpStream;
-use std::io::BufReader;
 use std::io::prelude::*;
+use std::fs::File;
 
 fn main() {
-    let stream = TcpStream::connect("127.0.0.1:9000").unwrap();
+    let mut stream = TcpStream::connect("127.0.0.1:9000").unwrap();
+    
+    let mut file = File::create("prueba.txt").unwrap();
+    let mut buffer = [0u8; 4096];
 
-    let mut reader = BufReader::new(stream);
-    let mut buffer = String::new();
-
-    reader.read_line(&mut buffer).unwrap();
-    print!("{}", buffer);
+    loop {
+        let check = stream.read(&mut buffer).unwrap();
+        if check == 0 { break; }
+        file.write(&mut buffer).unwrap();
+    } 
 }
